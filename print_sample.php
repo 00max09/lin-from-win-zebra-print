@@ -1,19 +1,29 @@
 <?php
-
-$printer_names = array("pr2") // that's static but maybe will be changed in the future
+$get_printers_command = "lpstat -e";
+exec($get_printers_command, $printer_names, $get_printers_return_code);
 ?>
 
 <html>
 
 <head>
     <script>
-        function print_success(){
+        function urlencodeFormData(fd) {
+            var params = new URLSearchParams();
+            for (var pair of fd.entries()) {
+                typeof pair[1] == 'string' && params.append(pair[0], pair[1]);
+            }
+            return params.toString();
+        }
+
+        function print_success() {
             window.alert("Printed");
         }
-        function print_error(error){
+
+        function print_error(error) {
             window.alert("Error occured : " + error);
         }
-        function send_to_printer(formData){
+
+        function send_to_printer(formData) {
             var XHR = new XMLHttpRequest(),
                 FD = new FormData(formData);
 
@@ -40,14 +50,14 @@ $printer_names = array("pr2") // that's static but maybe will be changed in the 
 
 <body>
 
-    <form onsubmit="send_to_printer(this)">
+    <form onsubmit="send_to_printer(this); return false;">
         <label for="zpl_input">Zpl Input</label>
         <input type="text" id="zpl_input" name="zpl_input"><br><br>
 
         <select name="selected_printer" id="selected_printer">
             <?php
             foreach ($printer_names as &$printer_name) {
-                echo "<option value=\"" + $printer_name + "\">" + $printer_name + "</option>\n";
+                echo "<option value=\"" . $printer_name . "\">" . $printer_name . "</option>\n";
             }
             ?>
         </select>
